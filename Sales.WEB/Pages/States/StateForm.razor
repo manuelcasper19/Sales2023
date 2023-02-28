@@ -1,14 +1,14 @@
 ﻿@inject SweetAlertService sweetAlertService
 
-<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"/>
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
 
 <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator/>
-    <div class="mb-3">  
+    <DataAnnotationsValidator />
+    <div class="mb-3">
         <label>Pais</label>
         <div>
-            <InputText class="form-control" @bind-Value="@Country.Name"/>
-            <ValidationMessage For="@( () => Country.Name )"/>
+            <InputText class="form-control" @bind-Value="@State.Name" />
+            <ValidationMessage For="@( () => State.Name )" />
         </div>
 
 
@@ -24,7 +24,7 @@
 
     [Parameter]
     [EditorRequired]
-    public Country Country { get; set; } = null!;
+    public State State { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
@@ -38,28 +38,28 @@
 
     protected override void OnInitialized()
     {
-        editContext = new(Country);
+        editContext = new(State);
 
     }
-    private async Task OnBeforeInternalNavigation( LocationChangingContext context)
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
     {
         var formWasMofied = editContext.IsModified();
-        if( !formWasMofied || FormPostedSuccessfully)
+        if (!formWasMofied || FormPostedSuccessfully)
         {
             return;
         }
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
-        {
-            Title = "Confirmación",
-            Text = "¿Deseas abandonar la pagina y perder los cambios efectuados?",
-            Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Sí"
-        });
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la pagina y perder los cambios efectuados?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Sí"
+            });
 
         var confirm = !string.IsNullOrEmpty(result.Value);
-        if( confirm)
+        if (confirm)
         {
             return;
         }

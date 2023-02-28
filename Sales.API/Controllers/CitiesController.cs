@@ -6,69 +6,60 @@ using Sales.Shared.Entities;
 namespace Sales.API.Controllers
 {
     [ApiController]
-    [Route("/api/countries")]
-    public class CountriesController : Controller
+    [Route("/api/cities")]
+    public class CitiesController : ControllerBase
     {
         private readonly DataContext _context;
-        public CountriesController( DataContext context)
+
+        public CitiesController (DataContext context)
         {
             _context = context;
         }
         [HttpGet]
-        public  async Task<ActionResult> GetAsync()
+        public async Task<ActionResult> GetAsync()
         {
-            return Ok(await _context.Countries.Include(c => c.States). ToListAsync());
+            return Ok(await _context.Cities.ToListAsync());
         }
-        [HttpGet("full")]
-        public async Task<ActionResult> GetFullAsync()
-        {
-            return Ok(await _context.Countries
-                .Include(s => s.States!)
-                .ThenInclude( c => c.Cities)
-                .ToListAsync());
-        }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetAsync( int id )
+        public async Task<ActionResult> GetAsync(int id)
         {
-            var country = await _context.Countries
-                .Include(s => s.States!)
-                .ThenInclude(c => c.Cities)
-                .FirstOrDefaultAsync( c => c.Id == id);
-            if(country == null)
+            var city = await _context.Cities.FirstOrDefaultAsync(s => s.Id == id);
+            if (city == null)
             {
                 return NotFound();
             }
-            return Ok( country );
+            return Ok(city);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == id);
-            if (country == null)
+            var city = await _context.Cities.FirstOrDefaultAsync(s => s.Id == id);
+            if (city == null)
             {
                 return NotFound();
             }
-            _context.Remove(country);
+            _context.Remove(city);
             await _context.SaveChangesAsync();
             return NoContent();
-          
+
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsnc( Country country)
+        public async Task<ActionResult> PostAsnc(City city)
         {
-            _context.Add(country);
+            _context.Add(city);
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un país con el mismo nombre.");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre.");
                 }
                 else
                 {
@@ -83,19 +74,19 @@ namespace Sales.API.Controllers
 
         }
         [HttpPut]
-        public async Task<ActionResult> PutAsync(Country country)
+        public async Task<ActionResult> PutAsync(City city)
         {
-            _context.Update(country);
+            _context.Update(city);
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un registro con el mismo nombre.");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre.");
                 }
                 else
                 {
@@ -110,31 +101,31 @@ namespace Sales.API.Controllers
 
         }
 
-        private async Task<ActionResult> SaveAndEdit( Country country)
+        private async Task<ActionResult> SaveAndEdit(State state)
         {
             try
             {
-                if (country.Id.Equals(null))
+                if (state.Id.Equals(null))
                 {
-                    _context.Add(country);
+                    _context.Add(state);
                     await _context.SaveChangesAsync();
-                    return Ok(country);
+                    return Ok(state);
                 }
                 else
                 {
-                    _context.Update(country);
+                    _context.Update(state);
                     await _context.SaveChangesAsync();
-                    return Ok(country);
+                    return Ok(state);
 
                 }
 
 
             }
-            catch(DbUpdateException dbUpdateException)
+            catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un país con el mismo nombre.");
+                    return BadRequest("Ya existe un estado con el mismo nombre.");
                 }
                 else
                 {
