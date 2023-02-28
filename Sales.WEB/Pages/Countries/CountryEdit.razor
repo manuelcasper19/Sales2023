@@ -1,0 +1,59 @@
+﻿@page "/countries/edit/{id:int}"
+@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+@inject NavigationManager navigationManager
+
+<h3 class="text-center">Editar pais </h3>
+@if( country is null)
+{
+        <div class="text-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831">
+    </div>
+}
+else
+{
+    <CountryForm @ref="countryForm" Country="country" OnValidSubmit="EditAsync" ReturnAction="Return" />
+}
+
+@code {
+    private Country? country;
+    private CountryForm? countryForm;
+
+    [Parameter]
+    public int id { get; set; }
+
+    private async Task EditAsync()
+    {
+        var responseHttp = await repository.Put("/api/countries", country);
+        if( responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        Return();
+
+    }
+    private void Return(){
+        countryForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/countries");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<Country>($"/api/countries/{id}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/countries");
+                return;
+            }
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        country = responseHttp.Response;
+    }
+
+}

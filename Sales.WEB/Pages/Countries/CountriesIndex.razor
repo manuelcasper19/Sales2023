@@ -1,48 +1,84 @@
 ﻿@page "/countries"
 @inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
 
+<h3 class="text-center">Paises</h3>
 
-<h3>Paises</h3>
-    
-
-@if(Countries is null)
-{
-    <p>Cargando...</p>
-}else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th></th>
-                <th>País</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var country in Countries!)
-            {
+<a class="btn btn-primary mb-2" href="/countries/create">Agregar nuevo país</a>
+<GenericList MyList="Countries">
+   
+    <Body>
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>
-                        <a class="btn btn-warning">Editar</a>
-                        <button class="btn btn-danger">Borrar</button>
-                    </td>
-                    <td>
-                        @country.Name
-                    </td>
+                    <th></th>
+                    <th>País</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-
-}
-
-
+            </thead>
+            <tbody>
+                @foreach (var country in Countries!)
+                {
+                    <tr>
+                        <td>
+                            <a class="btn btn-warning" href="/countries/edit/@country.Id">Editar</a>
+                            <button class="btn btn-danger" @onclick=@( ()=> DeleteAsync( country.Id ))>Borrar</button>
+                        </td>
+                        <td>
+                            @country.Name
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>    
 
 @code {
     public List<Country>? Countries { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
         var responseHttp = await repository.Get<List<Country>>("/api/countries");
         Countries = responseHttp.Response;
     }
 
+    private async Task DeleteAsync( int id)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas eliminar el Pais?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Sí"
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.Delete($"/api/countries/{id}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var messsage = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messsage, SweetAlertIcon.Error);
+                return;
+            }
+
+        }
+        await LoadAsync();
+    }
+
 }
+
+

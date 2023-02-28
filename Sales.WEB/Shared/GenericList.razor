@@ -1,0 +1,55 @@
+﻿@typeparam Titem
+
+@if (MyList is null)
+{
+    @if (Loading is null)
+    {
+        <div class="text-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831">
+        </div>
+      
+    }
+    else
+    {
+        @Loading
+    }
+}
+else if (MyList.Count == 0)
+{
+    @if (NoRecords is null)
+    {
+        <div class="align-items-center">
+            <p> No existen registros para mostrar.</p>
+        </div>
+    }
+    else
+    {
+        @NoRecords
+    }
+}
+else
+{
+    @Body
+}
+
+@code {
+    //Este paramatro es para decirle que la pagina puede recibir cualquier cosa titem
+
+    [Parameter]
+    //Le vamos a pasar un pedazo de código blazor, si el cliente no manda el renderFragment, usamos el nuestro
+    public RenderFragment? Loading { get; set; }
+
+    [Parameter]
+    //Este lo usuamos sino hay registros y si el usuario no manda registros
+    public RenderFragment? NoRecords { get; set; }
+    [Parameter]
+    [EditorRequired]
+    //cuerpo de lo que quiere pintar y si es obligatorio
+    public RenderFragment Body { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    //cuerpo de lo que quiere pintar y si es obligatorio
+    public List<Titem> MyList { get; set; } = null!;
+
+}
