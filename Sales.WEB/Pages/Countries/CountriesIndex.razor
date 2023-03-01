@@ -11,16 +11,22 @@
     <Body>
         <table class="table table-striped">
             <thead>
-                <tr>                    
+                <tr>   
+                    <th>#</th>
                     <th>País</th>
                     <th>Estados/Departamentos</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
+                @{ int i = 0;}
                 @foreach (var country in Countries!)
                 {
+                    i++;
                     <tr>
+                        <td>
+                            @i
+                        </td>
                         <td>
                             @country.Name
                         </td>
