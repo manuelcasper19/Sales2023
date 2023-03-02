@@ -85,6 +85,14 @@ namespace Sales.API.Data
                 });
             }
 
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.Add( new Category { Name = "Tecnología "});
+                _context.Categories.Add(new Category { Name = "Productos de aseo" });
+                _context.Categories.Add(new Category { Name = "Ropa" });
+                _context.Categories.Add(new Category { Name = "Alimentación" });
+                _context.Categories.Add(new Category { Name = "Construcción" });
+            }
             await _context.SaveChangesAsync();
         }
 
