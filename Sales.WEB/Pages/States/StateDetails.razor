@@ -1,37 +1,35 @@
-﻿@page "/countries/details/{Id:int}"
+﻿@page "/state/details/{StateId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-
-
-@if (country is null)
+@if (state is null)
 {
     <div class="text-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831">
     </div>
-}else
+}
+else
 {
-    <h3 class="text-center">Detalle del País: @country.Name </h3>
+    <h3 class="text-center">Estado/departamento: @state.Name </h3>
     <div class="mb-2">
-        <a class="btn btn-primary" href="/states/create/@country.Id">Agregar nuevo Departamento/Estado</a>
-        <a class="btn btn-success" href="/countries">Regresar</a>
+        <a class="btn btn-primary" href="/cities/create/@StateId">Agregar nueva ciudad</a>
+        <a class="btn btn-success" href="/countries/details/@state.CountryId">Regresar</a>
     </div>
-    <GenericList MyList="country.States!.ToList()">
+    <GenericList MyList="state.Cities!.ToList()">
 
         <Body>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>País</th>
-                        <th>Estados/Departamentos</th>
+                        <th>Ciudad</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @{ int i = 0; }
-                    @foreach (var state in country.States!.ToList())
+                    @foreach (var city in state.Cities!.ToList())
                     {
                         i++;
                         <tr>
@@ -39,15 +37,12 @@
                                 @i
                             </td>
                             <td>
-                                @state.Name
+                                @city.Name
                             </td>
+      
                             <td>
-                                @state.CitiesNumber
-                            </td>
-                            <td>
-                                <a class="btn btn-info" href="/state/details/@state.Id">Detalles</a>
-                                <a class="btn btn-warning" href="/states/edit/@state.Id">Editar</a>
-                                <button class="btn btn-danger" @onclick=@( ()=> DeleteAsync( state.Id ))>Borrar</button>
+                                <a class="btn btn-warning" href="/cities/edit/@city.Id">Editar</a>
+                                <button class="btn btn-danger" @onclick=@( ()=> DeleteAsync( city.Id ))>Borrar</button>
                             </td>
 
                         </tr>
@@ -56,16 +51,13 @@
             </table>
         </Body>
     </GenericList>
-
 }
 
-
-
 @code {
-    private Country? country;
+    private State? state;
 
     [Parameter]
-    public int Id { get; set; }
+    public int StateId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,7 +67,7 @@
 
     private async Task LoadAsync()
     {
-        var responseHttp = await repository.Get<Country>($"/api/countries/{Id}");
+        var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -88,14 +80,15 @@
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        country = responseHttp.Response;
+        state = responseHttp.Response;
     }
+
     private async Task DeleteAsync(int id)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = "¿Deseas eliminar el Pais?",
+                Text = "¿Deseas eliminar la ciudad?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true,
                 CancelButtonText = "No",
@@ -108,7 +101,7 @@
             return;
         }
 
-        var responseHttp = await repository.Delete($"/api/states/{id}");
+        var responseHttp = await repository.Delete($"/api/cities/{id}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
@@ -121,4 +114,5 @@
         }
         await LoadAsync();
     }
+
 }
