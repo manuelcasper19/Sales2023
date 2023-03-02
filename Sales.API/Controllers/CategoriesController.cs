@@ -79,18 +79,17 @@ namespace Sales.API.Controllers
                 if( category.Id.Equals( null) || category.Id.Equals(0))
                 {
                     _context.Add(category);
-                    await _context.SaveChangesAsync();
-                    return Ok(category);
+              
                 }
                 else
                 { 
 
                     _context.Update(category);
-                    await _context.SaveChangesAsync();
-                    return Ok(category);
+           
                 }
+                await _context.SaveChangesAsync();
+                return Ok(category);
 
-  
             }
             catch (DbUpdateException dbUpdateException)
             {
