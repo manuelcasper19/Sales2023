@@ -87,11 +87,17 @@ namespace Sales.API.Data
 
             if (!_context.Categories.Any())
             {
-                _context.Categories.Add( new Category { Name = "Tecnología "});
+                _context.Categories.Add( new Category { Name = "Computadores"});
                 _context.Categories.Add(new Category { Name = "Productos de aseo" });
                 _context.Categories.Add(new Category { Name = "Ropa" });
                 _context.Categories.Add(new Category { Name = "Alimentación" });
                 _context.Categories.Add(new Category { Name = "Construcción" });
+                _context.Categories.Add(new Category { Name = "Agropecuario" });
+                _context.Categories.Add(new Category { Name = "Televisores" });
+                _context.Categories.Add(new Category { Name = "Celulares" });
+                _context.Categories.Add(new Category { Name = "zapatos" });
+                _context.Categories.Add(new Category { Name = "gimnasio" });
+               
             }
             await _context.SaveChangesAsync();
         }
