@@ -9,13 +9,16 @@ namespace Sales.API.Controllers
     [Route("/api/categories")]
     public class CategoriesController : ControllerBase
     {
+        //attributes
         private readonly DataContext _context;
 
+        //constructor
         public CategoriesController(DataContext context )
         {
             _context = context;
         }
 
+        //method that queries and list all categories
         [HttpGet]
         public async Task<ActionResult> GetAsync()
         {
@@ -28,6 +31,8 @@ namespace Sales.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //method that queries a category by id
         [HttpGet("{id}")]
         public async Task<ActionResult> GetAsync(int id)
         {
@@ -48,6 +53,7 @@ namespace Sales.API.Controllers
             }
         }
 
+        //method that deletes a category by id
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
@@ -70,6 +76,7 @@ namespace Sales.API.Controllers
 
         }
 
+        //method that saves and updates a category
         [HttpPost]
         public async Task<ActionResult> PostandPutAsync(Category category)
         {
@@ -112,6 +119,7 @@ namespace Sales.API.Controllers
 
         }
 
+        //method private that find a category by id
         private async Task<Category?> FindCategory( int id)
         {
            
