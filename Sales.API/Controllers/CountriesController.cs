@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
+using Sales.API.Helpers;
+using Sales.Shared.DTOs;
 using Sales.Shared.Entities;
 
 namespace Sales.API.Controllers
@@ -15,10 +17,36 @@ namespace Sales.API.Controllers
             _context = context;
         }
         [HttpGet]
-        public  async Task<ActionResult> GetAsync()
+        public  async Task<ActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            return Ok(await _context.Countries.Include(c => c.States). ToListAsync());
+            var queryable = _context.Countries
+                            .Include(x => x.States)
+                            .AsQueryable();
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+
+            return Ok(await queryable
+                .OrderBy( c => c.Name)
+                .Paginate(pagination)
+                .ToListAsync());
         }
+        [HttpGet("totalPages")]
+        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.Countries.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
+        }
+
         [HttpGet("full")]
         public async Task<ActionResult> GetFullAsync()
         {
@@ -110,42 +138,42 @@ namespace Sales.API.Controllers
 
         }
 
-        private async Task<ActionResult> SaveAndEdit( Country country)
-        {
-            try
-            {
-                if (country.Id.Equals(null))
-                {
-                    _context.Add(country);
-                    await _context.SaveChangesAsync();
-                    return Ok(country);
-                }
-                else
-                {
-                    _context.Update(country);
-                    await _context.SaveChangesAsync();
-                    return Ok(country);
+        //private async Task<ActionResult> SaveAndEdit( Country country)
+        //{
+        //    try
+        //    {
+        //        if (country.Id.Equals(null))
+        //        {
+        //            _context.Add(country);
+        //            await _context.SaveChangesAsync();
+        //            return Ok(country);
+        //        }
+        //        else
+        //        {
+        //            _context.Update(country);
+        //            await _context.SaveChangesAsync();
+        //            return Ok(country);
 
-                }
+        //        }
 
 
-            }
-            catch(DbUpdateException dbUpdateException)
-            {
-                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
-                {
-                    return BadRequest("Ya existe un país con el mismo nombre.");
-                }
-                else
-                {
-                    return BadRequest(dbUpdateException.InnerException.Message);
-                }
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(exception.Message);
-            }
+        //    }
+        //    catch(DbUpdateException dbUpdateException)
+        //    {
+        //        if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+        //        {
+        //            return BadRequest("Ya existe un país con el mismo nombre.");
+        //        }
+        //        else
+        //        {
+        //            return BadRequest(dbUpdateException.InnerException.Message);
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        return BadRequest(exception.Message);
+        //    }
 
-        }
+        //}
     }
 }
