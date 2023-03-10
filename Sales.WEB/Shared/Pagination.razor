@@ -1,10 +1,13 @@
 ﻿<nav>
-    <ul class="pagination">
+    <ul class="pagination justify-content-center">
 
         @foreach (var link in Links)
         {
-            <li @onclick=@(() => InternalSelectedPage(link)) style="cursor: pointer" class="page-item @(link.Enable ? null : "disabled") @(link.Enable ? "active" : null)">
-                <a class="page-link">@link.Text</a>
+            <li @onclick=@(() => InternalSelectedPage(link)) 
+                style="cursor: pointer" class="page-item text-center
+                    @(link.Enable ? null : "disabled") 
+                    @(link.Enable ? "active" : null)">
+                <a class="page-link m-1" style="width: @((link.Text =="<<" || link.Text ==">>") ? "40px" : "40px")">@link.Text</a>
             </li>
         }
     </ul>
@@ -14,27 +17,27 @@
 @code {
     [Parameter] public int CurrentPage { get; set; } = 1;
     [Parameter] public int TotalPages { get; set; }
-    [Parameter] public int Radio { get; set; } = 5;
+    [Parameter] public int Radio { get; set; } = 10;
     [Parameter] public EventCallback<int> SelectedPage { get; set; }
     List<PageModel> Links = new();
+
 
     //Se ejecuta cuando los parametros están cargados en memorias
     protected override void OnParametersSet()
     {
         Links = new List<PageModel>();
-
         var previousLinkEnable = CurrentPage != 1;
         var previousLinkPage = CurrentPage - 1;
         Links.Add(new PageModel
             {
-                Text = "Anterior",
+                Text = "<<",
                 Page = previousLinkPage,
                 Enable = previousLinkEnable
             });
 
         for (int i = 1; i <= TotalPages; i++)
         {
-            if (i >= CurrentPage - Radio && i <= CurrentPage + Radio)
+            if( TotalPages <= 10)
             {
                 Links.Add(new PageModel
                     {
@@ -43,13 +46,38 @@
                         Text = $"{i}"
                     });
             }
+            else if ( (Radio - CurrentPage) >= 0 && (Radio - i) >=0)
+            {
+                Links.Add(new PageModel
+                    {
+                        Page = i,
+                        Enable = CurrentPage == i,
+                        Text = $"{i}"
+                    });
+            }
+            else if ((Radio - CurrentPage) < 0 && (CurrentPage - Radio ) < i && i <= CurrentPage)
+            {
+                Links.Add(new PageModel
+                    {
+                        Page = i,
+                        Enable = CurrentPage == i,
+                        Text = $"{i}"
+                    });
+            }
+            //esto lo hacemos para que no recorra más el ciclo cuando la lista tenga 11 registros, 1 del boton anterior y 10 de las paginas
+            if( Links.Count() == 11)
+            {
+                break;
+            }
+      
+          
         }
 
         var linkNextEnable = CurrentPage != TotalPages;
-        var linkNextPage = CurrentPage + 1;
+        var linkNextPage = (CurrentPage == TotalPages) ? TotalPages : CurrentPage + 1;
         Links.Add(new PageModel
             {
-                Text = "Siguiente",
+                Text = ">>",
                 Page = linkNextPage,
                 Enable = linkNextEnable
             });
@@ -62,7 +90,7 @@
         {
             return;
         }
-
+        CurrentPage = pageModel.Page;
         await SelectedPage.InvokeAsync(pageModel.Page);
     }
 
@@ -73,6 +101,9 @@
         public int Page { get; set; }
         public bool Enable { get; set; } = true;
         public bool Active { get; set; } = false;
+
     }
+
+
 
 }
