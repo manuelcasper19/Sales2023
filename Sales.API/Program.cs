@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
+using Sales.API.Helpers;
 using Sales.API.Services;
+using Sales.Shared.Entities;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +23,23 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>( c => c.UseSqlServer("name=ConecctionBD"));
 builder.Services.AddTransient<SeedDb>();
 builder.Services.AddScoped<IApiService, ApiService>();
+
+//Inyectamos User, interface IUserHelper y su implementación
+//le decimos a la aplicación como se manejraron los usuarios
+builder.Services.AddIdentity<User, IdentityRole>(u =>
+{
+    u.User.RequireUniqueEmail = true;
+    u.Password.RequireDigit = false;
+    u.Password.RequiredUniqueChars = 0;
+    u.Password.RequireLowercase = false;
+    u.Password.RequireNonAlphanumeric = false;
+    u.Password.RequireUppercase = false;
+})
+    .AddEntityFrameworkStores<DataContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IUserHelper, UserHelper>();
+
 
 var app = builder.Build();
 
@@ -44,6 +64,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+//habilitamos autenticacón
+app.UseAuthentication();
 
 app.UseAuthorization();
 
