@@ -4,7 +4,7 @@
 @inject NavigationManager navigationManager
 
 
-
+@attribute [Authorize(Roles = "Admin")]
 @if (city is null)
 {
     <div class="text-center">

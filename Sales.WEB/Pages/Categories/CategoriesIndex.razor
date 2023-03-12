@@ -1,7 +1,9 @@
 ﻿@page "/categories"
+
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 @inject NavigationManager navigationManager
+@attribute [Authorize(Roles = "Admin")]
 
 <h3 class="text-center">Categorias</h3>
 

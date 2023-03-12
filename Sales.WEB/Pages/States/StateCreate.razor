@@ -3,7 +3,7 @@
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-
+@attribute [Authorize(Roles = "Admin")]
 <h3 class="text-center">Crear Estado</h3>
 <StateForm @ref="stateForm" State="state" OnValidSubmit="CreateAsync" ReturnAction="Return">
 

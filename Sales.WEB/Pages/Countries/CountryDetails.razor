@@ -4,7 +4,7 @@
 @inject SweetAlertService sweetAlertService
 
 
-
+@attribute [Authorize(Roles = "Admin")]
 @if (country is null)
 {
     <div class="text-center">

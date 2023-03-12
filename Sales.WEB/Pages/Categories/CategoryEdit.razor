@@ -3,6 +3,7 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 
+@attribute [Authorize(Roles = "Admin")]
 
 @if (category is null)
 {

@@ -3,7 +3,7 @@
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-
+@attribute [Authorize(Roles = "Admin")]
 <h3 class="text-center">Crear País</h3>
 <CountryForm @ref="countryForm" Country="country" OnValidSubmit="Create" ReturnAction="Return">
 

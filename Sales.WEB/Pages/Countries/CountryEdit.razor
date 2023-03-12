@@ -3,6 +3,7 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 
+@attribute [Authorize(Roles = "Admin")]
 <h3 class="text-center">Editar pais </h3>
 @if( country is null)
 {
