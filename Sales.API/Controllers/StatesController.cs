@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
 using Sales.API.Helpers;
@@ -9,6 +11,8 @@ namespace Sales.API.Controllers
 {
     [ApiController]
     [Route("/api/states")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
     public class StatesController : ControllerBase
     {
         private readonly DataContext _context;
