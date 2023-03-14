@@ -13,9 +13,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7295/") });
 builder.Services.AddScoped<IRepository,  Repository>();
 builder.Services.AddSweetAlert2();
-//Inyecatmos las autenticaciones del usuario
+
 builder.Services.AddAuthorizationCore();
-builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProviderTest>();
+//Inyecatmos las autenticaciones del usuario
+builder.Services.AddScoped<AuthenticationProviderJWT>();
+builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProviderJWT>(x => x.GetRequiredService<AuthenticationProviderJWT>());
+builder.Services.AddScoped<ILoginService, AuthenticationProviderJWT>(x => x.GetRequiredService<AuthenticationProviderJWT>());
+
 
 
 await builder.Build().RunAsync();
