@@ -7,27 +7,12 @@
 @attribute [Authorize(Roles = "Admin")]
 @if (country is null)
 {
- @*   <div class="text-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831">
-    </div>*@
+
     <div class="spinner" />
 
 }else
 {
-@*    <h3 class="text-center">Detalle del País: @country.Name </h3>
-    <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
-        <div>
-            <a class="btn btn-primary" href="/states/create/@country.Id">Nuevo Estado/Departamento</a>
-            <a class="btn btn-success" href="/countries">Regresar</a>
-        </div>
-        <div class="mx-2">
-            <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar estado/departamento..." @bind-value="Filter" />
-        </div>
-        <div>
-            <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
-            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
-        </div>
-    </div>*@
+
     <Pagination CurrentPage="currentPage"
             TotalPages="totalPages"
             SelectedPage="SelectedPageAsync" />

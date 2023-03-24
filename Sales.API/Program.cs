@@ -61,6 +61,10 @@ builder.Services.AddDbContext<DataContext>( c => c.UseSqlServer("name=Conecction
 builder.Services.AddTransient<SeedDb>();
 builder.Services.AddScoped<IApiService, ApiService>();
 
+//Inyectamos la implementacion de fileStorage para subir archivos azure
+builder.Services.AddScoped<IFileStorage, FileStorage>();
+
+
 //Inyectamos User, interface IUserHelper y su implementación
 //le decimos a la aplicación como se manejraron los usuarios
 builder.Services.AddIdentity<User, IdentityRole>(u =>

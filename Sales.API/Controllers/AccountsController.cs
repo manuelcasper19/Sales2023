@@ -16,12 +16,18 @@ namespace Sales.API.Controllers
     {
         private readonly IUserHelper _userHelper;
         private readonly IConfiguration _configuration;
+        private readonly IFileStorage _fileStorage;
+        private readonly string _container;
+
 
         //inyectamos IuserHelper para evitar estar inyectando signmanager, userManager y rolManager, asi lo evito
-        public AccountsController(IUserHelper userHelper, IConfiguration configuration)
+        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage)
         {
             _userHelper = userHelper;
             _configuration = configuration;
+            _fileStorage = fileStorage;
+            _container = "users";
+
 
         }
 
@@ -30,6 +36,13 @@ namespace Sales.API.Controllers
         {
             
             User user = model;  //es un casteo que solo deja propiedas de usuario
+            //En este paso revisamos que el string en base64 de la foto venta
+            if (!string.IsNullOrEmpty(model.Photo))
+            {
+                var photoUser = Convert.FromBase64String(model.Photo);
+                model.Photo = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
+            }
+
             var result = await _userHelper.AddUserAsync(user, model.Password);
             if (result.Succeeded)
             {
