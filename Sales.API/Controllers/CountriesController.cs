@@ -37,6 +37,16 @@ namespace Sales.API.Controllers
                 .Paginate(pagination)
                 .ToListAsync());
         }
+
+        //metodo para llenar drop down list de paises de forma anonima, cuando se cree el usuario
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetCombo()
+        {
+            return Ok(await _context.Countries.ToListAsync());
+        }
+
+
         [HttpGet("totalPages")]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {

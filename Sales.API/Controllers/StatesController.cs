@@ -41,6 +41,17 @@ namespace Sales.API.Controllers
                  .ToListAsync());
         }
 
+        //metodo para llenar drop down list de estados de forma anonima, cuando se cree el usuario
+        [AllowAnonymous]
+        [HttpGet("combo/{countryId:int}")]
+        public async Task<ActionResult> GetCombo(int countryId)
+        {
+            return Ok(await _context.States
+                .Where(x => x.CountryId == countryId)
+                .ToListAsync());
+        }
+
+
         [HttpGet("totalPages")]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {
