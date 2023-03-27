@@ -78,6 +78,13 @@ namespace Sales.WEB.Repository
             }
             return new HttpResponseWrapper<TResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
         }
+
+        public async Task<HttpResponseWrapper<object>> Get(string url)
+        {
+            var responseHTTP = await _httpClient.GetAsync(url);
+            return new HttpResponseWrapper<object>(null, !responseHTTP.IsSuccessStatusCode, responseHTTP);
+        }
+
         private async Task<T> UnserializeAnswer<T>(HttpResponseMessage httpResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             var respuestaString = await httpResponse.Content.ReadAsStringAsync();

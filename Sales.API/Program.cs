@@ -64,17 +64,26 @@ builder.Services.AddScoped<IApiService, ApiService>();
 //Inyectamos la implementacion de fileStorage para subir archivos azure
 builder.Services.AddScoped<IFileStorage, FileStorage>();
 
+//Inyectamos la implementación del envio de correo
+builder.Services.AddScoped<IMailHelper, MailHelper>();
 
 //Inyectamos User, interface IUserHelper y su implementación
 //le decimos a la aplicación como se manejraron los usuarios
 builder.Services.AddIdentity<User, IdentityRole>(u =>
 {
+    u.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+    u.SignIn.RequireConfirmedEmail = true;  //solo se puede logar cuando confirme correo y lo activamos
     u.User.RequireUniqueEmail = true;
     u.Password.RequireDigit = false;
     u.Password.RequiredUniqueChars = 0;
     u.Password.RequireLowercase = false;
     u.Password.RequireNonAlphanumeric = false;
     u.Password.RequireUppercase = false;
+    //Definimo el tiempo de bloqueo para el usuario, por intentos fallidos de contraseña
+    u.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2); //TODO: cambiar a 5 minutos
+    u.Lockout.MaxFailedAccessAttempts = 3;
+    u.Lockout.AllowedForNewUsers = true;
+
 })
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
