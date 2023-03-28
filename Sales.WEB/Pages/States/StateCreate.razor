@@ -13,6 +13,9 @@
     private State state = new();
     private StateForm? stateForm;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     [Parameter]
     public int CountryId { get; set; }
 
@@ -26,6 +29,7 @@
             await sweetAlertService.FireAsync("Error", message, icon: SweetAlertIcon.Error);
             return;
         }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
 
     }

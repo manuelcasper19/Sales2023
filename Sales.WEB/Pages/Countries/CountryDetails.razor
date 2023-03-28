@@ -1,4 +1,5 @@
-﻿@page "/countries/details/{Id:int}"
+﻿@page "/countries/details/{CountryId:int}"
+@using Sales.WEB.Pages.States;
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -26,7 +27,8 @@
                 <i class="oi oi-globe text-center"></i> Detalle del País: @country.Name
             </div>
             <div class="col-3">
-                <a class="btn btn-sm btn-primary float-end" href="/states/create/@country.Id"><i class="oi oi-plus"></i> Agregar Estado/Departamento</a>
+
+                <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal(CountryId))><i class="oi oi-plus"></i> Agregar Estado/Departamento</a>
             </div>
         </div>
                 <div class="card-body">
@@ -70,12 +72,9 @@
                                 @state.CitiesNumber
                             </td>
                             <td>
-                        @*        <a class="btn btn-info" href="/state/details/@state.Id">Detalles</a>
-                                <a class="btn btn-warning" href="/states/edit/@state.Id">Editar</a>
-                                <button class="btn btn-danger" @onclick=@( ()=> DeleteAsync( state.Id ))>Borrar</button>*@
-
+                                        
                                 <a href="/state/details/@state.Id" class="btn btn-info btn-sm"><i class="oi oi-list" /> Detalles</a>
-                                <a href="/states/edit/@state.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
+                                        <a @onclick=@(() => ShowModal(state.Id, true)) class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
                                 <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(state.Id))><i class="oi oi-trash" /> Borrar</button>
                             </td>
 
@@ -98,8 +97,11 @@
     private int currentPage = 1;
     private int totalPages;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
     [Parameter]
-    public int Id { get; set; }
+    public int CountryId { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -119,7 +121,26 @@
         currentPage = page;
         await LoadAsync(page);
     }
+    //Metodo modal
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
 
+        if (isEdit)
+        {
+            modalReference = Modal.Show<StateEdit>(string.Empty, new ModalParameters().Add("StateId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<StateCreate>(string.Empty, new ModalParameters().Add("CountryId", id));
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
 
     private async Task LoadAsync(int page = 1)
     {
@@ -133,16 +154,16 @@
 
         if (string.IsNullOrEmpty(Filter))
         {
-            url1 = $"api/states?id={Id}&page={page}";
-            url2 = $"api/states/totalPages?id={Id}";
+            url1 = $"api/states?id={CountryId}&page={page}";
+            url2 = $"api/states/totalPages?id={CountryId}";
         }
         else
         {
-            url1 = $"api/states?id={Id}&page={page}&filter={Filter}";
-            url2 = $"api/states/totalPages?id={Id}&filter={Filter}";
+            url1 = $"api/states?id={CountryId}&page={page}&filter={Filter}";
+            url2 = $"api/states/totalPages?id={CountryId}&filter={Filter}";
         }
 
-        var responseHppt = await repository.Get<Country>($"api/countries/{Id}");
+        var responseHppt = await repository.Get<Country>($"api/countries/{CountryId}");
         var responseHppt2 = await repository.Get<List<State>>(url1);
         var responseHppt3 = await repository.Get<int>(url2);
         country = responseHppt.Response;

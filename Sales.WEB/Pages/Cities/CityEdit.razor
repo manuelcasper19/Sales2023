@@ -7,9 +7,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @if (city is null)
 {
-    <div class="text-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831">
-    </div>
+    <div class="spinner" />
 }
 else
 {
@@ -20,6 +18,9 @@ else
 @code {
     private City? city;
     private CityForm? cityForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
     public int CityId { get; set; }
@@ -49,6 +50,7 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
 
     }
