@@ -15,7 +15,7 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-         <AuthorizeView Roles="Admin">
+        <AuthorizeView Roles="Admin">
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/countries">
@@ -26,13 +26,19 @@
         </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <Authorized>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/categories">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Categorias
-            </NavLink>
-        </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/categories">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Categorias
+                    </NavLink>
+                </div>
             </Authorized>
         </AuthorizeView>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="products">
+                <span class="oi oi-star" aria-hidden="true"></span> Productos
+            </NavLink>
+        </div>
+
     </nav>
 </div>
 
