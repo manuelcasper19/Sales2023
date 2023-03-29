@@ -12,13 +12,14 @@ namespace Sales.API.Data
         private readonly DataContext _context;
         private readonly IApiService _apiService;
         private readonly IUserHelper _userHelper;
-
-        public SeedDb(DataContext context, IApiService apiService, IUserHelper userHelper)
+        private readonly IFileStorage _fileStorage;
+        public SeedDb(DataContext context, IApiService apiService, IUserHelper userHelper, IFileStorage fileStorage)
         {
             _context = context;
             _apiService = apiService;
             _userHelper = userHelper;
-
+            _fileStorage = fileStorage;
+         
         }
 
         public async Task SeedAsync()
@@ -27,11 +28,81 @@ namespace Sales.API.Data
             await CheckCountriesAsync();
             await CheckCategoriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("101033", "Stiven", "Hernandez", "stiven@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
+      
+            await CheckUserAsync("101033", "Stiven", "Hernandez", "stiven@yopmail.com", "303 311 4670", "Or bello", "goku1.jpg", UserType.Admin);
+            await CheckProductsAsync();
+            await CheckUserAsync("2020", "Lina", "Rave", "lina@yopmail.com", "303 311 4670", "Or bello", "bulma.jpg", UserType.User);
+            await CheckUserAsync("3030", "Brad", "Pitt", "brad@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", "Brad.jpg", UserType.User);
+            await CheckUserAsync("4040", "Angelina", "Jolie", "angelina@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", "Angelina.jpg", UserType.User);
+            await CheckUserAsync("5050", "Bob", "Marley", "bob@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", "bob.jpg", UserType.User);
+            await CheckProductsAsync();
 
         }
+        private async Task CheckProductsAsync()
+        {
+            if (!_context.Products.Any())
+            {
+                await AddProductAsync("Adidas Barracuda", 270000M, 12F, new List<string>() { "Calzado", "Deportes" }, new List<string>() { "adidas_barracuda.png" });
+                await AddProductAsync("Adidas Superstar", 250000M, 12F, new List<string>() { "Calzado", "Deportes" }, new List<string>() { "Adidas_superstar.png" });
+                await AddProductAsync("AirPods", 1300000M, 12F, new List<string>() { "Tecnología", "Apple" }, new List<string>() { "airpos.png", "airpos2.png" });
+                await AddProductAsync("Audifonos Bose", 870000M, 12F, new List<string>() { "Tecnología" }, new List<string>() { "audifonos_bose.png" });
+                await AddProductAsync("Bicicleta Ribble", 12000000M, 6F, new List<string>() { "Deportes" }, new List<string>() { "bicicleta_ribble.png" });
+                await AddProductAsync("Camisa Cuadros", 56000M, 24F, new List<string>() { "Ropa" }, new List<string>() { "camisa_cuadros.png" });
+                await AddProductAsync("Casco Bicicleta", 820000M, 12F, new List<string>() { "Deportes" }, new List<string>() { "casco_bicicleta.png", "casco.png" });
+                await AddProductAsync("iPad", 2300000M, 6F, new List<string>() { "Tecnología", "Apple" }, new List<string>() { "ipad.png" });
+                await AddProductAsync("iPhone 13", 5200000M, 6F, new List<string>() { "Tecnología", "Apple" }, new List<string>() { "iphone13.png", "iphone13b.png", "iphone13c.png", "iphone13d.png" });
+                await AddProductAsync("Mac Book Pro", 12100000M, 6F, new List<string>() { "Tecnología", "Apple" }, new List<string>() { "mac_book_pro.png" });
+                await AddProductAsync("Mancuernas", 370000M, 12F, new List<string>() { "Deportes" }, new List<string>() { "mancuernas.png" });
+                await AddProductAsync("Mascarilla Cara", 26000M, 100F, new List<string>() { "Belleza" }, new List<string>() { "mascarilla_cara.png" });
+                await AddProductAsync("New Balance 530", 180000M, 12F, new List<string>() { "Calzado", "Deportes" }, new List<string>() { "newbalance530.png" });
+                await AddProductAsync("New Balance 565", 179000M, 12F, new List<string>() { "Calzado", "Deportes" }, new List<string>() { "newbalance565.png" });
+                await AddProductAsync("Nike Air", 233000M, 12F, new List<string>() { "Calzado", "Deportes" }, new List<string>() { "nike_air.png" });
+                await AddProductAsync("Nike Zoom", 249900M, 12F, new List<string>() { "Calzado", "Deportes" }, new List<string>() { "nike_zoom.png" });
+                await AddProductAsync("Buso Adidas Mujer", 134000M, 12F, new List<string>() { "Ropa", "Deportes" }, new List<string>() { "buso_adidas.png" });
+                await AddProductAsync("Suplemento Boots Original", 15600M, 12F, new List<string>() { "Nutrición" }, new List<string>() { "Boost_Original.png" });
+                await AddProductAsync("Whey Protein", 252000M, 12F, new List<string>() { "Nutrición" }, new List<string>() { "whey_protein.png" });
+                await AddProductAsync("Arnes Mascota", 25000M, 12F, new List<string>() { "Mascotas" }, new List<string>() { "arnes_mascota.png" });
+                await AddProductAsync("Cama Mascota", 99000M, 12F, new List<string>() { "Mascotas" }, new List<string>() { "cama_mascota.png" });
+                await AddProductAsync("Teclado Gamer", 67000M, 12F, new List<string>() { "Gamer", "Tecnología" }, new List<string>() { "teclado_gamer.png" });
+                await AddProductAsync("Silla Gamer", 980000M, 12F, new List<string>() { "Gamer", "Tecnología" }, new List<string>() { "silla_gamer.png" });
+                await AddProductAsync("Mouse Gamer", 132000M, 12F, new List<string>() { "Gamer", "Tecnología" }, new List<string>() { "mouse_gamer.png" });
+                await _context.SaveChangesAsync();
+            }
+        }
+        private async Task AddProductAsync(string name, decimal price, float stock, List<string> categories, List<string> images)
+        {
+            Product prodcut = new()
+            {
+                Description = name,
+                Name = name,
+                Price = price,
+                Stock = stock,
+                ProductCategories = new List<ProductCategory>(),
+                ProductImages = new List<ProductImage>()
+            };
 
-        private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
+            foreach (var categoryName in categories)
+            {
+                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+                if (category != null)
+                {
+                    prodcut.ProductCategories.Add(new ProductCategory { Category = category });
+                }
+            }
+
+            foreach (string? image in images)
+            {
+                var filePath = $"{Environment.CurrentDirectory}\\Images\\products\\{image}";
+                var fileBytes = File.ReadAllBytes(filePath);
+                var imagePath = await _fileStorage.SaveFileAsync(fileBytes, "jpg", "products");
+                prodcut.ProductImages.Add(new ProductImage { Image = imagePath });
+            }
+
+            _context.Products.Add(prodcut);
+        }
+
+
+        private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, string image, UserType userType)
         {
             var user = await _userHelper.GetUserAsync(email);
             if (user == null)
@@ -41,6 +112,10 @@ namespace Sales.API.Data
                 {
                     city = await _context.Cities.FirstOrDefaultAsync();
                 }
+                var filePath = $"{Environment.CurrentDirectory}\\Images\\users\\{image}";
+                var fileBytes = File.ReadAllBytes(filePath);
+                var imagePath = await _fileStorage.SaveFileAsync(fileBytes, "jpg", "users");
+
 
                 user = new User
                 {
@@ -53,6 +128,7 @@ namespace Sales.API.Data
                     Document = document,
                     City = _context.Cities.FirstOrDefault(),
                     UserType = userType,
+                    Photo = imagePath,
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
@@ -138,228 +214,25 @@ namespace Sales.API.Data
         {
             if (!_context.Categories.Any())
             {
-                _context.Categories.Add(new Category { Name = "Computadores" });
-                _context.Categories.Add(new Category { Name = "Productos de aseo" });
+
+                _context.Categories.Add(new Category { Name = "Apple" });
+                _context.Categories.Add(new Category { Name = "Autos" });
+                _context.Categories.Add(new Category { Name = "Belleza" });
+                _context.Categories.Add(new Category { Name = "Calzado" });
+                _context.Categories.Add(new Category { Name = "Comida" });
+                _context.Categories.Add(new Category { Name = "Cosmeticos" });
+                _context.Categories.Add(new Category { Name = "Deportes" });
+                _context.Categories.Add(new Category { Name = "Erótica" });
+                _context.Categories.Add(new Category { Name = "Ferreteria" });
+                _context.Categories.Add(new Category { Name = "Gamer" });
+                _context.Categories.Add(new Category { Name = "Hogar" });
+                _context.Categories.Add(new Category { Name = "Jardín" });
+                _context.Categories.Add(new Category { Name = "Jugetes" });
+                _context.Categories.Add(new Category { Name = "Lenceria" });
+                _context.Categories.Add(new Category { Name = "Mascotas" });
+                _context.Categories.Add(new Category { Name = "Nutrición" });
                 _context.Categories.Add(new Category { Name = "Ropa" });
-                _context.Categories.Add(new Category { Name = "Alimentación" });
-                _context.Categories.Add(new Category { Name = "Construcción" });
-                _context.Categories.Add(new Category { Name = "Agropecuario" });
-                _context.Categories.Add(new Category { Name = "Televisores" });
-                _context.Categories.Add(new Category { Name = "Celulares" });
-                _context.Categories.Add(new Category { Name = "zapatos" });
-                _context.Categories.Add(new Category { Name = "gimnasio" });
-                _context.Categories.Add(new Category { Name = "Animales" });
-                _context.Categories.Add(new Category { Name = "Gatos" });
-                _context.Categories.Add(new Category { Name = "Ropa gato" });
-                _context.Categories.Add(new Category { Name = "Alimentación gatos" });
-                _context.Categories.Add(new Category { Name = "Alimentación perros" });
-                _context.Categories.Add(new Category { Name = "Alimentación Vacas" });
-                _context.Categories.Add(new Category { Name = "Alimentación Vacas2" });
-                _context.Categories.Add(new Category { Name = "Alimentación colegio" });
-                _context.Categories.Add(new Category { Name = "Alimentación equipo futbol" });
-                _context.Categories.Add(new Category { Name = "Alimentación equipo Taxistas" });
-                _context.Categories.Add(new Category { Name = "Alimentación equipo Uber" });
-                _context.Categories.Add(new Category { Name = "Alimentación equipo Indrive" });
-                _context.Categories.Add(new Category { Name = "Alimentación equipo Didi" });
-                _context.Categories.Add(new Category { Name = "Construcción Edificio" });
-                _context.Categories.Add(new Category { Name = "Construcción casa" });
-                _context.Categories.Add(new Category { Name = "Construcción piscinas" });
-                _context.Categories.Add(new Category { Name = "Construcción canchas" });
-                _context.Categories.Add(new Category { Name = "Construcción tenis" });
-                _context.Categories.Add(new Category { Name = "Construcción futbol" });
-                _context.Categories.Add(new Category { Name = "Construcción beisbol" });
-                _context.Categories.Add(new Category { Name = "Construcción softbol" });
-                _context.Categories.Add(new Category { Name = "Construcción basket" });
-                _context.Categories.Add(new Category { Name = "Construcción obrera" });
-                _context.Categories.Add(new Category { Name = "Construcción carreteras" });
-                _context.Categories.Add(new Category { Name = "Construcción vías" });
-                _context.Categories.Add(new Category { Name = "Agropecuario vacas" });
-                _context.Categories.Add(new Category { Name = "Agropecuario perros" });
-                _context.Categories.Add(new Category { Name = "Agropecuario marranos" });
-                _context.Categories.Add(new Category { Name = "Agropecuario caballos" });
-                _context.Categories.Add(new Category { Name = "Agropecuario gallinas" });
-                _context.Categories.Add(new Category { Name = "Agropecuario peces" });
-                _context.Categories.Add(new Category { Name = "Agropecuario gatos" });
-                _context.Categories.Add(new Category { Name = "Agropecuario toros" });
-                _context.Categories.Add(new Category { Name = "Agropecuario chorizos" });
-                _context.Categories.Add(new Category { Name = "Agropecuario cerdos" });
-                _context.Categories.Add(new Category { Name = "Agropecuario moderno" });
-                _context.Categories.Add(new Category { Name = "Agropecuario antiguo" });
-                _context.Categories.Add(new Category { Name = "Agropecuario bua" });
-                _context.Categories.Add(new Category { Name = "Agropecuario religioso" });
-                _context.Categories.Add(new Category { Name = "Agropecuario resabiado" });
-                _context.Categories.Add(new Category { Name = "Agropecuario rabioso" });
-                _context.Categories.Add(new Category { Name = "Agropecuario calmado" });
-                _context.Categories.Add(new Category { Name = "Agropecuario iritado" });
-                _context.Categories.Add(new Category { Name = "Agropecuario medicado" });
-                _context.Categories.Add(new Category { Name = "Agropecuario unido" });
-                _context.Categories.Add(new Category { Name = "Agropecuario parto" });
-                _context.Categories.Add(new Category { Name = "Televisores nuevo" });
-                _context.Categories.Add(new Category { Name = "Televisores viejos" });
-                _context.Categories.Add(new Category { Name = "Televisores modernos" });
-                _context.Categories.Add(new Category { Name = "Televisores antiguos" });
-                _context.Categories.Add(new Category { Name = "Televisores samsung" });
-                _context.Categories.Add(new Category { Name = "Televisores lg" });
-                _context.Categories.Add(new Category { Name = "Televisores huwei" });
-                _context.Categories.Add(new Category { Name = "Televisores kaley" });
-                _context.Categories.Add(new Category { Name = "Televisores oi" });
-                _context.Categories.Add(new Category { Name = "Televisores barrigones" });
-                _context.Categories.Add(new Category { Name = "Televisores LCD" });
-                _context.Categories.Add(new Category { Name = "Televisores PLASMA" });
-                _context.Categories.Add(new Category { Name = "Televisores SMARTV" });
-                _context.Categories.Add(new Category { Name = "Televisores pesados" });
-                _context.Categories.Add(new Category { Name = "Televisores livianos" });
-                _context.Categories.Add(new Category { Name = "Televisores robados" });
-                _context.Categories.Add(new Category { Name = "Celulares nuevo" });
-                _context.Categories.Add(new Category { Name = "Celulares viejos" });
-                _context.Categories.Add(new Category { Name = "Celulares modernos" });
-                _context.Categories.Add(new Category { Name = "Celulares antiguos" });
-                _context.Categories.Add(new Category { Name = "Celulares samsung" });
-                _context.Categories.Add(new Category { Name = "Celulares lg" });
-                _context.Categories.Add(new Category { Name = "Celulares huwei" });
-                _context.Categories.Add(new Category { Name = "Celulares kaley" });
-                _context.Categories.Add(new Category { Name = "Celulares oi" });
-                _context.Categories.Add(new Category { Name = "Celulares nokia" });
-                _context.Categories.Add(new Category { Name = "Celulares motorola" });
-                _context.Categories.Add(new Category { Name = "Celulares ipro" });
-                _context.Categories.Add(new Category { Name = "Celulares iphone" });
-                _context.Categories.Add(new Category { Name = "Celulares makui" });
-                _context.Categories.Add(new Category { Name = "Celulares 1234" });
-                _context.Categories.Add(new Category { Name = "zapatos  nuevos" });
-                _context.Categories.Add(new Category { Name = "zapatos  modernos" });
-                _context.Categories.Add(new Category { Name = "zapatos  veijos" });
-                _context.Categories.Add(new Category { Name = "zapatos  antiguos" });
-                _context.Categories.Add(new Category { Name = "zapatos  juveniles" });
-                _context.Categories.Add(new Category { Name = "zapatos  clasicos" });
-                _context.Categories.Add(new Category { Name = "zapatos  nike" });
-                _context.Categories.Add(new Category { Name = "zapatos  addidas" });
-                _context.Categories.Add(new Category { Name = "zapatos  lacoste" });
-                _context.Categories.Add(new Category { Name = "zapatos  para todo" });
-                _context.Categories.Add(new Category { Name = "zapatos  para pelear" });
-                _context.Categories.Add(new Category { Name = "zapatos  para chismosear" });
-                _context.Categories.Add(new Category { Name = "zapatos  para correr" });
-                _context.Categories.Add(new Category { Name = "zapatos  para hablar gatos" });
-                _context.Categories.Add(new Category { Name = "zapatos  rotos" });
-                _context.Categories.Add(new Category { Name = "gimnasio moderno" });
-                _context.Categories.Add(new Category { Name = "gimnasio nuevo" });
-                _context.Categories.Add(new Category { Name = "gimnasio viejo" });
-                _context.Categories.Add(new Category { Name = "gimnasio antiguo" });
-                _context.Categories.Add(new Category { Name = "gimnasio sin pesas" });
-                _context.Categories.Add(new Category { Name = "gimnasio sin restriccion" });
-                _context.Categories.Add(new Category { Name = "gimnasio con restriccion" });
-                _context.Categories.Add(new Category { Name = "gimnasio con volantes" });
-                _context.Categories.Add(new Category { Name = "gimnasio sin volantes" });
-                _context.Categories.Add(new Category { Name = "gimnasio molestos" });
-                _context.Categories.Add(new Category { Name = "gimnasio enojado" });
-                _context.Categories.Add(new Category { Name = "gimnasio alegre" });
-                _context.Categories.Add(new Category { Name = "gimnasio cansado" });
-                _context.Categories.Add(new Category { Name = "gimnasio marca" });
-                _context.Categories.Add(new Category { Name = "religion marca" });
-                _context.Categories.Add(new Category { Name = "religion turca" });
-                _context.Categories.Add(new Category { Name = "religion colombiana" });
-                _context.Categories.Add(new Category { Name = "religion venezolana" });
-                _context.Categories.Add(new Category { Name = "religion argentina" });
-                _context.Categories.Add(new Category { Name = "religion boliviana" });
-                _context.Categories.Add(new Category { Name = "religion mexicana" });
-                _context.Categories.Add(new Category { Name = "religion panama" });
-                _context.Categories.Add(new Category { Name = "religion costarica" });
-                _context.Categories.Add(new Category { Name = "religion brasil" });
-                _context.Categories.Add(new Category { Name = "religion chile" });
-                _context.Categories.Add(new Category { Name = "religion peru" });
-                _context.Categories.Add(new Category { Name = "religion hoduras" });
-                _context.Categories.Add(new Category { Name = "religion EEUU" });
-                _context.Categories.Add(new Category { Name = "religion uruguay" });
-                _context.Categories.Add(new Category { Name = "religion paraguay" });
-                _context.Categories.Add(new Category { Name = "religion españa" });
-                _context.Categories.Add(new Category { Name = "religion francia" });
-                _context.Categories.Add(new Category { Name = "religion alemania" });
-                _context.Categories.Add(new Category { Name = "religion portugal" });
-                _context.Categories.Add(new Category { Name = "religion italia" });
-                _context.Categories.Add(new Category { Name = "religion suiza" });
-                _context.Categories.Add(new Category { Name = "religion marroqui" });
-                _context.Categories.Add(new Category { Name = "religion israel" });
-                _context.Categories.Add(new Category { Name = "religion noruega" });
-                _context.Categories.Add(new Category { Name = "religion islandia" });
-                _context.Categories.Add(new Category { Name = "religion rusia" });
-                _context.Categories.Add(new Category { Name = "religion ucrania" });
-                _context.Categories.Add(new Category { Name = "religion prosta" });
-                _context.Categories.Add(new Category { Name = "religion suecia" });
-                _context.Categories.Add(new Category { Name = "religion por no dejar" });
-                _context.Categories.Add(new Category { Name = "religion china" });
-                _context.Categories.Add(new Category { Name = "religion mongol" });
-                _context.Categories.Add(new Category { Name = "religion japon" });
-                _context.Categories.Add(new Category { Name = "religion taiwan" });
-                _context.Categories.Add(new Category { Name = "religion sparrow" });
-                _context.Categories.Add(new Category { Name = "religion marta" });
-                _context.Categories.Add(new Category { Name = "religion san andres" });
-                _context.Categories.Add(new Category { Name = "neveras antioquia" });
-                _context.Categories.Add(new Category { Name = "neveras medellin" });
-                _context.Categories.Add(new Category { Name = "neveras bello" });
-                _context.Categories.Add(new Category { Name = "neveras sabaneta" });
-                _context.Categories.Add(new Category { Name = "neveras envigado" });
-                _context.Categories.Add(new Category { Name = "neveras itagui" });
-                _context.Categories.Add(new Category { Name = "neveras la estrella" });
-                _context.Categories.Add(new Category { Name = "neveras caldas" });
-                _context.Categories.Add(new Category { Name = "neveras abejorral" });
-                _context.Categories.Add(new Category { Name = "neveras barbosa" });
-                _context.Categories.Add(new Category { Name = "neveras cartagena" });
-                _context.Categories.Add(new Category { Name = "neveras turbaco" });
-                _context.Categories.Add(new Category { Name = "neveras magangue" });
-                _context.Categories.Add(new Category { Name = "neveras la isla" });
-                _context.Categories.Add(new Category { Name = "neveras bolivar" });
-                _context.Categories.Add(new Category { Name = "neveras barranquilla" });
-                _context.Categories.Add(new Category { Name = "neveras soldad" });
-                _context.Categories.Add(new Category { Name = "neveras puerto colombia" });
-                _context.Categories.Add(new Category { Name = "neveras atlantico" });
-                _context.Categories.Add(new Category { Name = "neveras cundinamarca" });
-                _context.Categories.Add(new Category { Name = "neveras bogota" });
-                _context.Categories.Add(new Category { Name = "neveras chia" });
-                _context.Categories.Add(new Category { Name = "neveras fusgasuga" });
-                _context.Categories.Add(new Category { Name = "neveras el 20" });
-                _context.Categories.Add(new Category { Name = "neveras la calera" });
-                _context.Categories.Add(new Category { Name = "neveras facatativa" });
-                _context.Categories.Add(new Category { Name = "neveras girardot" });
-                _context.Categories.Add(new Category { Name = "neveras girardota" });
-                _context.Categories.Add(new Category { Name = "neveras usaque" });
-                _context.Categories.Add(new Category { Name = "neveras el colegio" });
-                _context.Categories.Add(new Category { Name = "neveras el pueblo" });
-                _context.Categories.Add(new Category { Name = "neveras la ciudad" });
-                _context.Categories.Add(new Category { Name = "neveras la esquina" });
-                _context.Categories.Add(new Category { Name = "neveras la extraña" });
-                _context.Categories.Add(new Category { Name = "neveras cali" });
-                _context.Categories.Add(new Category { Name = "neveras valle" });
-                _context.Categories.Add(new Category { Name = "neveras jamundi" });
-                _context.Categories.Add(new Category { Name = "neveras palmira" });
-                _context.Categories.Add(new Category { Name = "neveras yumbo" });
-                _context.Categories.Add(new Category { Name = "neveras candelaria" });
-                _context.Categories.Add(new Category { Name = "neveras mercy" });
-                _context.Categories.Add(new Category { Name = "neveras albertina" });
-                _context.Categories.Add(new Category { Name = "neveras nidia" });
-                _context.Categories.Add(new Category { Name = "neveras pasto" });
-                _context.Categories.Add(new Category { Name = "neveras nariño" });
-                _context.Categories.Add(new Category { Name = "neveras ok" });
-                _context.Categories.Add(new Category { Name = "neveras tumaco" });
-                _context.Categories.Add(new Category { Name = "neveras tunja" });
-                _context.Categories.Add(new Category { Name = "neveras boyaca" });
-                _context.Categories.Add(new Category { Name = "neveras segovia" });
-                _context.Categories.Add(new Category { Name = "neveras cucuta" });
-                _context.Categories.Add(new Category { Name = "neveras norte" });
-                _context.Categories.Add(new Category { Name = "neveras bucaramanga " });
-                _context.Categories.Add(new Category { Name = "neveras santander " });
-                _context.Categories.Add(new Category { Name = "neveras la loma " });
-                _context.Categories.Add(new Category { Name = "neveras floridablanca" });
-                _context.Categories.Add(new Category { Name = "neveras el banco" });
-                _context.Categories.Add(new Category { Name = "neveras santa marta" });
-                _context.Categories.Add(new Category { Name = "neveras fundacion" });
-                _context.Categories.Add(new Category { Name = "neveras rioacha" });
-                _context.Categories.Add(new Category { Name = "neveras valledupar" });
-                _context.Categories.Add(new Category { Name = "neveras cesar" });
-                _context.Categories.Add(new Category { Name = "neveras codazzi" });
-                _context.Categories.Add(new Category { Name = "neveras sicelejo" });
-                _context.Categories.Add(new Category { Name = "neveras sucre" });
-                _context.Categories.Add(new Category { Name = "neveras el bongo" });
-
-
+                _context.Categories.Add(new Category { Name = "Tecnología" });
 
             }
             await _context.SaveChangesAsync();
