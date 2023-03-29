@@ -73,51 +73,51 @@ namespace Sales.API.Controllers
 
             return Ok(product);
         }
-        [HttpPost]
-        public async Task<ActionResult> PostAsync(ProductDTO productDTO)
-        {
-            try
-            {
-                Product newProduct = new()
-                {
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Price = productDTO.Price,
-                    Stock = productDTO.Stock,
-                    ProductCategories = new List<ProductCategory>(),
-                    ProductImages = new List<ProductImage>()
-                };
+        //[HttpPost]
+        //public async Task<ActionResult> PostAsync(ProductDTO productDTO)
+        //{
+        //    try
+        //    {
+        //        Product newProduct = new()
+        //        {
+        //            Name = productDTO.Name,
+        //            Description = productDTO.Description,
+        //            Price = productDTO.Price,
+        //            Stock = productDTO.Stock,
+        //            ProductCategories = new List<ProductCategory>(),
+        //            ProductImages = new List<ProductImage>()
+        //        };
 
-                foreach (var productImage in productDTO.ProductImages!)
-                {
-                    var photoProduct = Convert.FromBase64String(productImage);
-                    newProduct.ProductImages.Add(new ProductImage { Image = await _fileStorage.SaveFileAsync(photoProduct, ".jpg", "products") });
-                }
+        //        foreach (var productImage in productDTO.ProductImages!)
+        //        {
+        //            var photoProduct = Convert.FromBase64String(productImage);
+        //            newProduct.ProductImages.Add(new ProductImage { Image = await _fileStorage.SaveFileAsync(photoProduct, ".jpg", "products") });
+        //        }
 
-                foreach (var productCategoryId in productDTO.ProductCategoryIds!)
-                {
-                    var category = await _context.Categories.FirstOrDefaultAsync( c => c.Id== productCategoryId);
-                    newProduct.ProductCategories.Add(new ProductCategory { Category = category! });
-                }
+        //        foreach (var productCategoryId in productDTO.ProductCategoryIds!)
+        //        {
+        //            var category = await _context.Categories.FirstOrDefaultAsync( c => c.Id== productCategoryId);
+        //            newProduct.ProductCategories.Add(new ProductCategory { Category = category! });
+        //        }
 
-                _context.Add(newProduct);
-                await _context.SaveChangesAsync();
-                return Ok(productDTO);
-            }
-            catch (DbUpdateException dbUpdateException)
-            {
-                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
-                {
-                    return BadRequest("Ya existe una ciudad con el mismo nombre.");
-                }
+        //        _context.Add(newProduct);
+        //        await _context.SaveChangesAsync();
+        //        return Ok(productDTO);
+        //    }
+        //    catch (DbUpdateException dbUpdateException)
+        //    {
+        //        if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+        //        {
+        //            return BadRequest("Ya existe una ciudad con el mismo nombre.");
+        //        }
 
-                return BadRequest(dbUpdateException.Message);
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(exception.Message);
-            }
-        }
+        //        return BadRequest(dbUpdateException.Message);
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        return BadRequest(exception.Message);
+        //    }
+        //}
 
         [HttpPut]
         public async Task<ActionResult> PutAsync(Product product)
@@ -155,7 +155,53 @@ namespace Sales.API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-    
+
+        [HttpPost]
+        public async Task<ActionResult> PostAsync(ProductDTO productDTO)
+        {
+            try
+            {
+                Product newProduct = new()
+                {
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Price = productDTO.Price,
+                    Stock = productDTO.Stock,
+                    ProductCategories = new List<ProductCategory>(),
+                    ProductImages = new List<ProductImage>()
+                };
+
+                foreach (var productImage in productDTO.ProductImages!)
+                {
+                    var photoProduct = Convert.FromBase64String(productImage);
+                    newProduct.ProductImages.Add(new ProductImage { Image = await _fileStorage.SaveFileAsync(photoProduct, ".jpg", "products") });
+                }
+
+                foreach (var productCategoryId in productDTO.ProductCategoryIds!)
+                {
+                    var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == productCategoryId);
+                    newProduct.ProductCategories.Add(new ProductCategory { Category = category! });
+                }
+
+                _context.Add(newProduct);
+                await _context.SaveChangesAsync();
+                return Ok(productDTO);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un producto con el mismo nombre.");
+                }
+
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+        }
+
 
 
     }
