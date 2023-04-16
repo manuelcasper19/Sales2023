@@ -17,6 +17,9 @@ namespace Sales.API.Data
         public DbSet<State> States { get; set; }
         public DbSet<TemporalSale> TemporalSales { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Sale> Sales { get; set; }
+
+        public DbSet<SaleDetail> SaleDetails { get; set; }
 
         public DbSet<ProductCategory> ProductCategories { get; set; }
 

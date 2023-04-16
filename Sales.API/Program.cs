@@ -60,6 +60,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<DataContext>( c => c.UseSqlServer("name=ConecctionBD"));
 builder.Services.AddTransient<SeedDb>();
 builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<IOrdersHelper, OrdersHelper>();
 
 //Inyectamos la implementacion de fileStorage para subir archivos azure
 builder.Services.AddScoped<IFileStorage, FileStorage>();
