@@ -15,7 +15,7 @@ namespace Sales.API.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<State> States { get; set; }
-
+        public DbSet<TemporalSale> TemporalSales { get; set; }
         public DbSet<Product> Products { get; set; }
 
         public DbSet<ProductCategory> ProductCategories { get; set; }
